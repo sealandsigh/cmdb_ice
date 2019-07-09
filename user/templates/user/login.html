@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>用户登录</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'user/signin.css' %}" rel="stylesheet" type="text/css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <form class="form-signin" action={% url 'user:login' %} method="post">
+          {% if errors %}
+            {% for key,error in errors.items %}
+                <div class="alert alert-danger" role="alert">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+          {% csrf_token %}
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="name" class="sr-only">用户名</label>
+        <input type="text" name="name" id="name" class="form-control" placeholder="用户名" />
+        <label for="password" class="sr-only">密码</label>
+        <input type="password" name="password" id="password" class="form-control" placeholder="密码" />
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
+    </div> <!-- /container -->
+  </body>
+</html>
+

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加用户</title>
+</head>
+<body>
+    <form action="{% url 'user:add' %}" method="post" >
+        {% if errors %}
+            {% for key,error in errors.items %}
+                {{ error }}<br />
+            {% endfor %}
+        {% endif %}
+        {% csrf_token %}
+        用户名:<input type="text" name="name" value="" /><br />
+        密码:<input type="text" name="password" value="" /><br />
+        年龄:<input type="text" name="age" value="" /><br />
+        电话:<input type="text" name="tel" value="" /><br />
+        性别:<input type="radio" name="sex" value="1" />
+            男
+        <input type="radio" name="sex" value="0" />女
+        <br />
+        <input class="btn btn-primary" type="submit" name="" value="添加" />
+    </form>
+</body>
+</html>

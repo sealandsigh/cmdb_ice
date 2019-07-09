@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>日志统计</title>
+</head>
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ip地址</th>
+                <th>url地址</th>
+                <th>状态码</th>
+                <th>次数统计</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for foo in accesslog %}
+            <tr>
+                <td>{{ foo.ip }}</td>
+                <td>{{ foo.url }}</td>
+                <td>{{ foo.status }}</td>
+                <td>{{ foo.count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
