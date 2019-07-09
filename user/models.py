@@ -6,7 +6,6 @@ from django.db import models
 from .dbutils import DBconnection
 
 # Create your models here.
-test github
 def encrypt_password(password,salt=None):
     seed = 'zhujiajun'
     sa = []
