@@ -8,6 +8,9 @@
     <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
     <!-- Custom styles for this template -->
     <link href="{% static 'user/signin.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}">
   </head>
 
   <body>
@@ -30,7 +33,11 @@
       </form>
 
     </div> <!-- /container -->
-      <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+      <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.js' %}"></script>
+      <script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.js' %}"></script>
+      <script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.js' %}"></script>
+      <script type="text/javascript" src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
   </body>
 </html>
 
