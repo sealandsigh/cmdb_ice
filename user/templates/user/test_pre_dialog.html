@@ -80,59 +80,20 @@
             </tbody>
         </table>
         <form>
-            <a class="btn btn-primary btn-create-user" href="javascript:void(0);">添加用户</a>
+            <a class="btn btn-primary" href={% url 'user:addview' %}>添加用户</a>
             <a class="btn btn-primary" href="{% url 'user:accesslog' %}">查看accesslog情况</a>
         </form>
     </div> <!-- /container -->
-
-        <!-- Modal -->
-    <div class="modal fade" id="dialog-user-create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">创建用户</h4>
-          </div>
-          <div class="modal-body">
-            <form class="form-signin">
-            <label for="name">用户名</label>
-            <input type="text" name="name" id="name" class="form-control" value="" />
-            <label for="passord">密码</label>
-            <input type="text" name="password" id="passord" class="form-control" value="" /><br />
-            <label for="age">年龄</label>
-            <input type="text" name="age" id="age" class="form-control" value="" /><br />
-            <label for="tel">电话</label>
-            <input type="text" name="tel" id="tel" class="form-control" value="" /><br />
-            性别:    <input type="radio" name="sex" value="1" checked="checked"/>
-            男
-            <input type="radio" name="sex" value="0" />女
-            <br />
-            <br />
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-            <button type="button" class="btn btn-primary">保存</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.js' %}"></script>
-    <script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.js' %}"></script>
     <script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.js' %}"></script>
     <script type="text/javascript" src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
 
     <script type="text/javascript">
         jQuery(document).ready(function(){
             jQuery('#table_user').DataTable();
     });
-        jQuery('.btn-create-user').on('click',function () {
-            jQuery('#dialog-user-create').modal({
-                show:true
-            })
-        })
     </script>
   </body>
 </html>
