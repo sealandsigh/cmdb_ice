@@ -2,7 +2,7 @@
 from django.shortcuts import render,redirect
 from user.models import User
 from user.validators import ValidUser
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 # Create your views here.
 def index(request):
     if not request.session.get('user'):
@@ -72,6 +72,7 @@ def addview(request):
         return redirect('user:login')
     return render(request,'user/add.html')
 
+
 def add(request):
     if request.session.get('user') is None:
         return redirect('user:login')
@@ -85,6 +86,16 @@ def add(request):
             'user':user,
             'errors':errors
         })
+
+def add_ajax(request):
+    if request.session.get('user') is None:
+        return JsonResponse({'code':403})
+    add_user_vaild,user,errors = ValidUser.valid_add(request.POST)
+    if add_user_vaild:
+        user.save()
+        return JsonResponse({'code':200})
+    else:
+        return JsonResponse({'code':400,'errors':errors})
 
 
 def passwordview(request):

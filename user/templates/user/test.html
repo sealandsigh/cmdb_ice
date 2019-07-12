@@ -95,6 +95,7 @@
           </div>
           <div class="modal-body">
             <form class="form-signin from-create-user">
+            {% csrf_token %}
             <label for="name">用户名</label>
             <input type="text" name="name" id="name" class="form-control" value="" />
             <label for="passord">密码</label>
@@ -134,9 +135,35 @@
             });
         });
         jQuery('.btn-save-user').on('click',function () {
-            console.log('test');
-            console.log(jQuery('.from-create-user').serializeArray());
-            console.log(jQuery('.from-create-user').find('[name=name]').val());
+            var data = jQuery('.from-create-user').serializeArray();
+            jQuery.post("{% url 'user:add_ajax' %}",data,function (result) {
+                console.log(result);
+                if (result['code'] == 200) {
+                    swal("成功","","success")
+                    //关闭dialog
+                    /*多行注释
+                      多行注释
+                     */
+                    jQuery('#dialog-user-create').modal({
+                        hide:true
+                    })
+                    //刷新页面
+                    window.location.reload()
+                } else if (result['code'] == 400) {
+                    var errors = [];
+                    jQuery.each(result['errors'],function (k,v) {
+                        errors.push(v)
+                    });
+                    swal("验证有误",errors.join('\n'),"error")
+                } else if (result['code'] == 403) {
+                    swal({
+                          title: "用户未登陆",
+                          text: "",
+                          timer: 2000,
+                          showConfirmButton: false
+                        });
+                }
+            },'json')
         });
     </script>
   </body>
