@@ -12,8 +12,9 @@ urlpatterns = [
     path('update/',views.update,name='update'),
     path('addview/',views.addview,name='addview'),
     path('add/',views.add,name='add'),
-    path('add/ajax/',views.add_ajax,name='add_ajax'),
     path('passwordview/',views.passwordview,name='passwordview'),
     path('password/',views.password,name='password'),
     path('accesslog/',views.accesslog,name='accesslog'),
+    path('add/ajax/',views.add_ajax,name='add_ajax'),
+    path('delete/ajax',views.delete_ajax,name='delete_ajax'),
 ]

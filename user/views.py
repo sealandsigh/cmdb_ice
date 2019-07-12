@@ -45,6 +45,14 @@ def delete(request):
     return redirect('user:index')
 
 
+def delete_ajax(request):
+    if request.session.get('user') is None:
+        return JsonResponse({'code':403})
+    uid = request.GET.get('uid')
+    User.objects.filter(pk=uid).delete()
+    return JsonResponse({'code':200})
+
+
 def view(request):
     if request.session.get('user') is None:
         return redirect('user:login')
