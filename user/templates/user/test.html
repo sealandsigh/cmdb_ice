@@ -94,7 +94,7 @@
             <h4 class="modal-title" id="myModalLabel">创建用户</h4>
           </div>
           <div class="modal-body">
-            <form class="form-signin">
+            <form class="form-signin from-create-user">
             <label for="name">用户名</label>
             <input type="text" name="name" id="name" class="form-control" value="" />
             <label for="passord">密码</label>
@@ -112,7 +112,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-            <button type="button" class="btn btn-primary">保存</button>
+            <button type="button" class="btn btn-primary btn-save-user">保存</button>
           </div>
         </div>
       </div>
@@ -131,8 +131,13 @@
         jQuery('.btn-create-user').on('click',function () {
             jQuery('#dialog-user-create').modal({
                 show:true
-            })
-        })
+            });
+        });
+        jQuery('.btn-save-user').on('click',function () {
+            console.log('test');
+            console.log(jQuery('.from-create-user').serializeArray());
+            console.log(jQuery('.from-create-user').find('[name=name]').val());
+        });
     </script>
   </body>
 </html>
