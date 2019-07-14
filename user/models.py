@@ -56,3 +56,12 @@ class User(models.Model):
             'tel': self.tel,
             'password': self.password
         }
+
+    def as_dict_nopassword(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'sex': self.sex,
+            'tel': self.tel
+        }

@@ -17,4 +17,5 @@ urlpatterns = [
     path('accesslog/',views.accesslog,name='accesslog'),
     path('add/ajax/',views.add_ajax,name='add_ajax'),
     path('delete/ajax',views.delete_ajax,name='delete_ajax'),
+    path('view/ajax',views.view_ajax,name='view_ajax'),
 ]

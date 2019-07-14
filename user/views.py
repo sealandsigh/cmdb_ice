@@ -3,6 +3,7 @@ from django.shortcuts import render,redirect
 from user.models import User
 from user.validators import ValidUser
 from django.http import HttpResponse,JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 def index(request):
     if not request.session.get('user'):
@@ -73,6 +74,26 @@ def update(request):
             'user':user,
             'errors':errors
         })
+
+
+'''
+{
+  code:200(创建成功),400(数据验证失败),403(用户未登陆)
+  result:{}
+  text: ''
+  errors:
+}
+'''
+
+def view_ajax(request):
+    if request.session.get('user') is None:
+        return JsonResponse({'code':403})
+    uid = request.GET.get('uid')
+    try:
+        user = User.objects.get(pk=uid)
+        return JsonResponse({'code':200,'result':user.as_dict_nopassword()})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code':400,'errors':{'id':'操作对象不存在'}})
 
 
 def addview(request):

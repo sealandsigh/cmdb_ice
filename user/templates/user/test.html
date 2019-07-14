@@ -74,7 +74,7 @@
                                href="javascript:void(0)">删除用户</a>
                         {% endif %}
                         <a class="btn btn-warning btn-xs" href={% url 'user:passwordview' %}?uid={{ user.id }}>修改密码</a>
-                        <a class="btn btn-success btn-xs" href="{% url 'user:view' %}?uid={{ user.id }}">编辑用户</a>
+                        <a class="btn btn-success btn-xs btn-edit-user" data-id="{{ user.id }}" href="javascript:void(0)">编辑用户</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -99,8 +99,8 @@
             {% csrf_token %}
             <label for="name">用户名</label>
             <input type="text" name="name" id="name" class="form-control" value="" />
-            <label for="passord">密码</label>
-            <input type="text" name="password" id="passord" class="form-control" value="" /><br />
+            <label for="password">密码</label>
+            <input type="text" name="password" id="password" class="form-control" value="" /><br />
             <label for="age">年龄</label>
             <input type="text" name="age" id="age" class="form-control" value="" /><br />
             <label for="tel">电话</label>
@@ -115,6 +115,40 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             <button type="button" class="btn btn-primary btn-save-user">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- Modal -->
+    <div class="modal fade" id="dialog-user-update" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">更新用户</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-signin form-update-user">
+            {% csrf_token %}
+            <label for="id">ID</label>
+            <input type="hidden" id="id" name="id" value="{{ user.id }}" class="form-control" /><br />
+            <label for="name">用户名</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" class="form-control" /><br />
+            <label for="age">年龄</label>
+            <input type="text" id="age" name="age" value="{{ user.age }}" class="form-control" /><br />
+            <label for="tel">电话</label>
+            <input type="text" id="tel" name="tel" value="{{ user.tel }}" class="form-control" /><br />
+            性别:<input type="radio" name="sex" value="1" />
+                男
+            <input type="radio" name="sex" value="0" />
+                女
+            <br />
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-update-user">更新</button>
           </div>
         </div>
       </div>
@@ -138,7 +172,6 @@
         jQuery('.btn-save-user').on('click',function () {
             var data = jQuery('.from-create-user').serializeArray();
             jQuery.post("{% url 'user:add_ajax' %}",data,function (result) {
-                console.log(result);
                 if (result['code'] == 200) {
                     swal({
                             title: '成功',
@@ -215,6 +248,41 @@
                     })
                 });
         });
+        jQuery(".btn-edit-user").on("click",function () {
+            jQuery("#dialog-user-update").modal('show');
+            var id = jQuery(this).attr("data-id");
+            var form = jQuery('.form-update-user');
+            jQuery.get("{% url 'user:view_ajax' %}", {'uid': id}, function (result) {
+                if (result['code'] == 200) {
+                    form.find('[name=id]').val(result['result']['id']);
+                    form.find('[name=name]').val(result['result']['name']);
+                    form.find('[name=tel]').val(result['result']['tel']);
+                    form.find('[name=age]').val(result['result']['age']);
+                    if (result['result']['sex']) {
+                        form.find('[name=sex][value=1]').prop('checked', true)
+                    } else {
+                        form.find('[name=sex][value=0]').prop('checked', true)
+                    }
+                } else if (result['code'] == 400) {
+                    var errors = [];
+                    jQuery.each(result['errors'], function (k, v) {
+                        errors.push(v)
+                    });
+                    swal("验证有误", errors.join('\n'), "error")
+                } else if (result['code'] == 403) {
+                    swal({
+                        title: "用户未登陆",
+                        text: "",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            },'json')
+        });
+        jQuery('.btn-update-user').on('click',function () {
+            var data = jQuery('.form-update-user').serializeArray();
+            console.log(data)
+        })
     </script>
   </body>
 </html>
