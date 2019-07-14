@@ -1,26 +1,38 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>编辑用户</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+        <!-- Custom styles for this template -->
+        <link href="{% static 'user/signin.css' %}" rel="stylesheet" type="text/css">
     </head>
 <body>
-    <form action="{% url 'user:update' %}" method="post" >
-        {% if errors %}
-            {% for key,error in errors.items %}
-                {{ error }}<br />
-            {% endfor %}
-        {% endif %}
-        {% csrf_token %}
-        ID: <input type="hidden" name="id" value="{{ user.id }}" /><br />
-        用户名:<input type="text" name="name" value="{{ user.name }}" /><br />
-        年龄:<input type="text" name="age" value="{{ user.age }}" /><br />
-        电话:<input type="text" name="tel" value="{{ user.tel }}" /><br />
-        性别:<input type="radio" name="sex" value="1" {% if user.sex == '1' %} checked="checked" {% endif %}/>
-            男
-        <input type="radio" name="sex" value="0" {% if user.sex == '0' %} checked="checked" {% endif %} />女
-        <br />
-        <input type="submit" name="" value="提交" /><br />
-    </form>
+    <div class="container">
+        <form class="form-signin" action="{% url 'user:update' %}" method="post" >
+            {% if errors %}
+                {% for key,error in errors.items %}
+                    {{ error }}<br />
+                {% endfor %}
+            {% endif %}
+            {% csrf_token %}
+            <label for="id">ID</label>
+            <input type="hidden" id="id" name="id" value="{{ user.id }}" class="form-control" /><br />
+            <label for="name">用户名</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" class="form-control" /><br />
+            <label for="age">年龄</label>
+            <input type="text" id="age" name="age" value="{{ user.age }}" class="form-control" /><br />
+            <label for="tel">电话</label>
+            <input type="text" id="tel" name="tel" value="{{ user.tel }}" class="form-control" /><br />
+            性别:<input type="radio" name="sex" value="1" {% if user.sex == '1' %} checked="checked" {% endif %}/>
+                男
+            <input type="radio" name="sex" value="0" {% if user.sex == '0' %} checked="checked" {% endif %} />女
+            <br />
+            <input type="submit" name="" value="提交" /><br />
+        </form>
+    </div>
 </body>
 </html>
