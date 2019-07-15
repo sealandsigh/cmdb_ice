@@ -73,8 +73,10 @@
                             <a class="btn btn-danger btn-xs btn-delete-user" data-id="{{ user.id }}"
                                href="javascript:void(0)">删除用户</a>
                         {% endif %}
-                        <a class="btn btn-warning btn-xs" href={% url 'user:passwordview' %}?uid={{ user.id }}>修改密码</a>
-                        <a class="btn btn-success btn-xs btn-edit-user" data-id="{{ user.id }}" href="javascript:void(0)">编辑用户</a>
+                        <a class="btn btn-warning btn-xs btn-change-password" data-id="{{ user.id }}"
+                           href="javascript:void(0)">修改密码</a>
+                        <a class="btn btn-success btn-xs btn-edit-user" data-id="{{ user.id }}"
+                           href="javascript:void(0)">编辑用户</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -86,7 +88,7 @@
         </form>
     </div> <!-- /container -->
 
-        <!-- Modal -->
+        <!-- User Create Modal -->
     <div class="modal fade" id="dialog-user-create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -120,7 +122,7 @@
       </div>
     </div>
 
-        <!-- Modal -->
+        <!-- User Update Modal -->
     <div class="modal fade" id="dialog-user-update" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -149,6 +151,34 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             <button type="button" class="btn btn-primary btn-update-user">更新</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <!-- User Password Modal -->
+    <div class="modal fade" id="dialog-user-password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">更新密码</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-signin form-change-password">
+            {% csrf_token %}
+            <input type="hidden" name="uid" value="{{ uid }}">
+            <label for="oldpassword">旧密码</label>
+            <input type="text" id="oldpassword" name="oldpassword" value="" class="form-control" /><br />
+            <label for="newpassword">新密码</label>
+            <input type="text" id="newpassword" name="newpassword" value="" class="form-control" /><br />
+            <label for="newpassconfirm">再次确认</label>
+            <input type="text" id="newpassconfirm" name="newpassconfirm" value="" class="form-control" /><br />
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-password-user">确认修改</button>
           </div>
         </div>
       </div>
@@ -323,6 +353,57 @@
                     })
                 }
             );
+        });
+        jQuery('.btn-change-password').on('click',function () {
+            jQuery('#dialog-user-password').modal('show');
+            var id = jQuery(this).attr("data-id");
+            var form = jQuery('.form-change-password');
+            form.find("[name=uid]").val(id);
+        });
+        jQuery('.btn-password-user').on('click',function () {
+            var data = jQuery('.form-change-password').serializeArray();
+            swal({
+                  title: "确定更改吗？",
+                  text: "",
+                  type: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#DD6B55",
+                  confirmButtonText: "确定更改！",
+                  cancelButtonText: "取消更改！",
+                  closeOnConfirm: false,
+                  closeOnCancel: true
+                },
+                function () {
+                    jQuery.post("{% url 'user:password_ajax' %}",data,function (result) {
+                        if (result['code'] == 200) {
+                            swal({
+                            title: '成功',
+                            text: '',
+                            type: 'success',
+                            closeOnConfirm: 'false'
+                        }, function () {
+                            //关闭sweetalert
+                            swal.close();
+                            /*刷新table*/
+                            window.location.reload()
+                        });
+                        } else if (result['code'] == 400) {
+                            var errors = [];
+                            jQuery.each(result['errors'],function (k,v) {
+                                errors.push(v)
+                            });
+                            swal("验证有误",errors.join('\n'),"error")
+                        } else if (result['code'] == 403) {
+                            swal({
+                          title: "用户未登陆",
+                          text: "",
+                          timer: 2000,
+                          showConfirmButton: false
+                            });
+                        }
+                    });
+                }
+            )
         });
     </script>
   </body>

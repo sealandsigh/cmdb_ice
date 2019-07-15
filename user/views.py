@@ -160,6 +160,17 @@ def password(request):
         })
 
 
+def password_ajax(request):
+    if request.session.get('user') is None:
+        return JsonResponse({'code': 403})
+    is_valid,user_password,errors,uid = ValidUser.valid_password(request.POST)
+    if is_valid:
+        user_password.save()
+        return JsonResponse({'code':200})
+    else:
+        return JsonResponse({'code':400,'errors':errors})
+
+
 def accesslog(request):
     if request.session.get('user') is None:
         return redirect('user:login')
