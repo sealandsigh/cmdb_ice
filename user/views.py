@@ -96,6 +96,18 @@ def view_ajax(request):
         return JsonResponse({'code':400,'errors':{'id':'操作对象不存在'}})
 
 
+def update_ajax(request):
+    if request.session.get('user') is None:
+        return JsonResponse({'code':403})
+
+    is_valid, user, errors = ValidUser.valid_update(request.POST)
+    if is_valid:
+        user.save()
+        return JsonResponse({'code':200})
+    else:
+        return JsonResponse({'code':400,'errors':errors})
+
+
 def addview(request):
     if request.session.get('user') is None:
         return redirect('user:login')
