@@ -1,0 +1,412 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>用户信息管理</title>
+    <!-- Bootstrap core CSS -->
+     <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}">
+    <style type="text/css">
+        body {
+            min-height: 2000px;
+            padding-top: 70px;
+            }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">CMDB</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="{% url 'user:index' %}">用户管理</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a>当前登录的用户是: {{ request.session.user.name }}</a></li>
+            <li><a href={% url 'user:logout' %} >退出登录</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+        <table id="table_user" class="table table-striped table-bordered table table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>年龄</th>
+                    <th>性别</th>
+                    <th>联系方式</th>
+                    <th>用户操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.age }}</td>
+                    <td>
+                        {% if user.sex == 1 %}
+                            男
+                        {% else %}
+                            女
+                        {% endif %}
+                    </td>
+                    <td>{{ user.tel }}</td>
+                    <td>
+                        {% if request.session.user.id != id %}
+                            {{ id }}
+                            <a class="btn btn-danger btn-xs btn-delete-user" data-id="{{ user.id }}"
+                               href="javascript:void(0)">删除用户</a>
+                        {% endif %}
+                        <a class="btn btn-warning btn-xs btn-change-password" data-id="{{ user.id }}"
+                           href="javascript:void(0)">修改密码</a>
+                        <a class="btn btn-success btn-xs btn-edit-user" data-id="{{ user.id }}"
+                           href="javascript:void(0)">编辑用户</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <form>
+            <a class="btn btn-primary btn-create-user" href="javascript:void(0);">添加用户</a>
+            <a class="btn btn-primary" href="{% url 'user:accesslog' %}">查看accesslog情况</a>
+        </form>
+    </div> <!-- /container -->
+
+        <!-- User Create Modal -->
+    <div class="modal fade" id="dialog-user-create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">创建用户</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-signin from-create-user">
+            {% csrf_token %}
+            <label for="name">用户名</label>
+            <input type="text" name="name" id="name" class="form-control" value="" />
+            <label for="password">密码</label>
+            <input type="text" name="password" id="password" class="form-control" value="" /><br />
+            <label for="age">年龄</label>
+            <input type="text" name="age" id="age" class="form-control" value="" /><br />
+            <label for="tel">电话</label>
+            <input type="text" name="tel" id="tel" class="form-control" value="" /><br />
+            性别:    <input type="radio" name="sex" value="1" checked="checked"/>
+            男
+            <input type="radio" name="sex" value="0" />女
+            <br />
+            <br />
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-save-user">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- User Update Modal -->
+    <div class="modal fade" id="dialog-user-update" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">更新用户</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-signin form-update-user">
+            {% csrf_token %}
+            <label for="id">ID</label>
+            <input type="hidden" id="id" name="id" value="{{ user.id }}" class="form-control" /><br />
+            <label for="name">用户名</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" class="form-control" /><br />
+            <label for="age">年龄</label>
+            <input type="text" id="age" name="age" value="{{ user.age }}" class="form-control" /><br />
+            <label for="tel">电话</label>
+            <input type="text" id="tel" name="tel" value="{{ user.tel }}" class="form-control" /><br />
+            性别:<input type="radio" name="sex" value="1" />
+                男
+            <input type="radio" name="sex" value="0" />
+                女
+            <br />
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-update-user">更新</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <!-- User Password Modal -->
+    <div class="modal fade" id="dialog-user-password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">更新密码</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-signin form-change-password">
+            {% csrf_token %}
+            <input type="hidden" name="uid" value="{{ uid }}">
+            <label for="oldpassword">旧密码</label>
+            <input type="text" id="oldpassword" name="oldpassword" value="" class="form-control" /><br />
+            <label for="newpassword">新密码</label>
+            <input type="text" id="newpassword" name="newpassword" value="" class="form-control" /><br />
+            <label for="newpassconfirm">再次确认</label>
+            <input type="text" id="newpassconfirm" name="newpassconfirm" value="" class="form-control" /><br />
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-password-user">确认修改</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.js' %}"></script>
+    <script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+            jQuery('#table_user').DataTable();
+
+        jQuery('.btn-create-user').on('click',function () {
+            jQuery('#dialog-user-create').modal({
+                show:true
+            });
+        });
+        jQuery('.btn-save-user').on('click',function () {
+            var data = jQuery('.from-create-user').serializeArray();
+            jQuery.post("{% url 'user:add_ajax' %}",data,function (result) {
+                if (result['code'] == 200) {
+                    swal({
+                            title: '成功',
+                            text: '',
+                            type: 'success',
+                            closeOnConfirm: 'false'
+                        }, function () {
+                            //关闭dialog
+                            jQuery('#dialog-user-create').modal({
+                                hide:true
+                            });
+                            //关闭sweetalert
+                            swal.close();
+                            /*刷新table*/
+                            window.location.reload()
+                        });
+                } else if (result['code'] == 400) {
+                    var errors = [];
+                    jQuery.each(result['errors'],function (k,v) {
+                        errors.push(v)
+                    });
+                    swal("验证有误",errors.join('\n'),"error")
+                } else if (result['code'] == 403) {
+                    swal({
+                          title: "用户未登陆",
+                          text: "",
+                          timer: 2000,
+                          showConfirmButton: false
+                        });
+                }
+            },'json')
+        });
+        jQuery('#table_user').on('click','.btn-delete-user',function () {
+            var id = jQuery(this).attr('data-id')
+            swal({
+                  title: "确定删除吗？",
+                  text: "你将无法恢复该虚拟文件！",
+                  type: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#DD6B55",
+                  confirmButtonText: "确定删除！",
+                  cancelButtonText: "取消删除！",
+                  closeOnConfirm: false,
+                  closeOnCancel: true
+                },
+                function(){
+                    jQuery.get("{% url 'user:delete_ajax' %}",{'uid':id},function (result) {
+                        if (result['code'] == 200) {
+                            swal({
+                            title: '成功',
+                            text: '',
+                            type: 'success',
+                            closeOnConfirm: 'false'
+                        }, function () {
+                            //关闭sweetalert
+                            swal.close();
+                            /*刷新table*/
+                            window.location.reload()
+                        });
+                        } else if (result['code'] == 400) {
+                            var errors = [];
+                            jQuery.each(result['errors'],function (k,v) {
+                                errors.push(v)
+                            });
+                            swal("验证有误",errors.join('\n'),"error")
+                        } else if (result['code'] == 403) {
+                            swal({
+                          title: "用户未登陆",
+                          text: "",
+                          timer: 2000,
+                          showConfirmButton: false
+                            });
+                        }
+                    })
+                });
+        });
+        jQuery("#table_user").on("click",".btn-edit-user",function () {
+            jQuery("#dialog-user-update").modal('show');
+            var id = jQuery(this).attr("data-id");
+            var form = jQuery('.form-update-user');
+            jQuery.get("{% url 'user:view_ajax' %}", {'uid': id}, function (result) {
+                if (result['code'] == 200) {
+                    form.find('[name=id]').val(result['result']['id']);
+                    form.find('[name=name]').val(result['result']['name']);
+                    form.find('[name=tel]').val(result['result']['tel']);
+                    form.find('[name=age]').val(result['result']['age']);
+                    if (result['result']['sex']) {
+                        form.find('[name=sex][value=1]').prop('checked', true)
+                    } else {
+                        form.find('[name=sex][value=0]').prop('checked', true)
+                    }
+                } else if (result['code'] == 400) {
+                    var errors = [];
+                    jQuery.each(result['errors'], function (k, v) {
+                        errors.push(v)
+                    });
+                    swal("验证有误", errors.join('\n'), "error")
+                } else if (result['code'] == 403) {
+                    swal({
+                        title: "用户未登陆",
+                        text: "",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            },'json')
+        });
+        jQuery('.btn-update-user').on('click',function () {
+            var data = jQuery('.form-update-user').serializeArray();
+            swal({
+                  title: "确定更新吗？",
+                  text: "",
+                  type: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#DD6B55",
+                  confirmButtonText: "确定更新！",
+                  cancelButtonText: "取消更新！",
+                  closeOnConfirm: false,
+                  closeOnCancel: true
+                },
+                function () {
+                    jQuery.post("{% url 'user:update_ajax' %}",data,function (result) {
+                        if (result['code'] == 200) {
+                            swal({
+                            title: '成功',
+                            text: '',
+                            type: 'success',
+                            closeOnConfirm: 'false'
+                        }, function () {
+                            //关闭sweetalert
+                            swal.close();
+                            /*刷新table*/
+                            window.location.reload()
+                        });
+                        } else if (result['code'] == 400) {
+                            var errors = [];
+                            jQuery.each(result['errors'],function (k,v) {
+                                errors.push(v)
+                            });
+                            swal("验证有误",errors.join('\n'),"error")
+                        } else if (result['code'] == 403) {
+                            swal({
+                          title: "用户未登陆",
+                          text: "",
+                          timer: 2000,
+                          showConfirmButton: false
+                            });
+                        }
+                    })
+                }
+            );
+        });
+        jQuery('#table_user').on('click','.btn-change-password',function () {
+            jQuery('#dialog-user-password').modal('show');
+            var id = jQuery(this).attr("data-id");
+            var form = jQuery('.form-change-password');
+            form.find("[name=uid]").val(id);
+        });
+        jQuery('.btn-password-user').on('click',function () {
+            var data = jQuery('.form-change-password').serializeArray();
+            swal({
+                  title: "确定更改吗？",
+                  text: "",
+                  type: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#DD6B55",
+                  confirmButtonText: "确定更改！",
+                  cancelButtonText: "取消更改！",
+                  closeOnConfirm: false,
+                  closeOnCancel: true
+                },
+                function () {
+                    jQuery.post("{% url 'user:password_ajax' %}",data,function (result) {
+                        if (result['code'] == 200) {
+                            swal({
+                            title: '成功',
+                            text: '',
+                            type: 'success',
+                            closeOnConfirm: 'false'
+                        }, function () {
+                            //关闭sweetalert
+                            swal.close();
+                            /*刷新table*/
+                            window.location.reload()
+                        });
+                        } else if (result['code'] == 400) {
+                            var errors = [];
+                            jQuery.each(result['errors'],function (k,v) {
+                                errors.push(v)
+                            });
+                            swal("验证有误",errors.join('\n'),"error")
+                        } else if (result['code'] == 403) {
+                            swal({
+                          title: "用户未登陆",
+                          text: "",
+                          timer: 2000,
+                          showConfirmButton: false
+                            });
+                        }
+                    });
+                }
+            )
+        });
+    });
+    </script>
+  </body>
+</html>
+
