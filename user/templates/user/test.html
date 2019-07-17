@@ -193,7 +193,7 @@
     <script type="text/javascript">
         jQuery(document).ready(function(){
             jQuery('#table_user').DataTable();
-    });
+
         jQuery('.btn-create-user').on('click',function () {
             jQuery('#dialog-user-create').modal({
                 show:true
@@ -234,7 +234,7 @@
                 }
             },'json')
         });
-        jQuery('.btn-delete-user').on('click',function () {
+        jQuery('#table_user').on('click','.btn-delete-user',function () {
             var id = jQuery(this).attr('data-id')
             swal({
                   title: "确定删除吗？",
@@ -278,7 +278,7 @@
                     })
                 });
         });
-        jQuery(".btn-edit-user").on("click",function () {
+        jQuery("#table_user").on("click",".btn-edit-user",function () {
             jQuery("#dialog-user-update").modal('show');
             var id = jQuery(this).attr("data-id");
             var form = jQuery('.form-update-user');
@@ -354,7 +354,7 @@
                 }
             );
         });
-        jQuery('.btn-change-password').on('click',function () {
+        jQuery('#table_user').on('click','.btn-change-password',function () {
             jQuery('#dialog-user-password').modal('show');
             var id = jQuery(this).attr("data-id");
             var form = jQuery('.form-change-password');
@@ -405,6 +405,7 @@
                 }
             )
         });
+    });
     </script>
   </body>
 </html>
