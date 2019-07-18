@@ -1,3 +1,6 @@
+import datetime
+import json
+
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -44,3 +47,31 @@ class Hosts(models.Model):
         obj.last_time = timezone.now()
         obj.save()
         return obj
+
+    # def as_dict(self):
+    #     rt = {}
+    #     for k,v in self.__dict__.items():
+    #         if isinstance(v,(int,float,bool,str,datetime.datetime)):
+    #             rt[k] = v
+    #     return rt
+
+    def as_dict(self):
+        self.disk = json.loads(self.disk)
+        if len(self.disk):
+            for i in self.disk:
+                if i['total']:
+                    i['total'] = int(i['total']) // 1024 // 1024 // 1024
+                    i['total'] = str(i['total']) + 'G'
+        self.disk = json.dumps(self.disk)
+        return {
+            'id': self.id,
+            'name': self.name,
+            'ip': self.ip,
+            'os': self.os,
+            'arch': self.arch,
+            'mem': self.mem,
+            'cpu': self.cpu,
+            'disk': self.disk,
+            'created_time': self.created_time,
+            'last_time': self.last_time
+        }
