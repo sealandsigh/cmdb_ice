@@ -106,7 +106,45 @@
 });
 
     jQuery('#table_asset').on('click', '.btn-delete-asset', function() {
-        console.log('删除' + jQuery(this).attr('data-id'));
-        table.ajax.reload(null, false);
+        var id = jQuery(this).attr('data-id');
+        swal({
+              title: "确定删除吗？",
+              text: "你将无法恢复该虚拟文件！",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "确定删除！",
+              closeOnConfirm: false
+            },
+            function(){
+                jQuery.get("{% url 'asset:delete_ajax' %}",{'uid':id},function (result) {
+                    if (result['code'] == 200) {
+                        swal({
+                        title: '成功',
+                        text: '',
+                        type: 'success',
+                        closeOnConfirm: 'false'
+                    }, function () {
+                        //关闭sweetalert
+                        swal.close();
+                        /*刷新table*/
+                        table.ajax.reload(null, false);
+                    });
+                    } else if (result['code'] == 400) {
+                        var errors = [];
+                        jQuery.each(result['errors'],function (k,v) {
+                            errors.push(v)
+                        });
+                        swal("验证有误",errors.join('\n'),"error")
+                    } else if (result['code'] == 403) {
+                        swal({
+                      title: "用户未登陆",
+                      text: "",
+                      timer: 2000,
+                      showConfirmButton: false
+                        });
+                    }
+                })
+            });
     });
 {% endblock %}
