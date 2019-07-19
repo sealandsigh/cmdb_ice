@@ -132,7 +132,9 @@
 
     jQuery('#table_asset').on('click', '.btn-edit-asset', function() {
     var id = jQuery(this).attr('data-id');
-    jQuery('.dialog-update-asset').modal('show');
+{#    show看来是可以用字典形式，但是注意hide不可以用这种形式 #}
+{#    jQuery('.dialog-update-asset').modal('show');#}
+    jQuery('.dialog-update-asset').modal({show:true});
     jQuery.get("{% url 'asset:get_ajax' %}",{'uid':id},function(result) {
             if (result['code'] == 200) {
                 jQuery('.form-update-asset').find('[id=id]').val(result['result']['id']);
