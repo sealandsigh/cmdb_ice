@@ -23,6 +23,36 @@
     </table>
 {% endblock %}
 
+{% block dialogs %}
+<!-- 资产编辑 -->
+<div class="modal fade dialog-update-asset" id="dialog-update-asset" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">编辑资产</h4>
+      </div>
+      <div class="modal-body">
+          <form class="form-horizontal form-update-asset">
+              {% csrf_token %}
+              <div class="form-group">
+                  <input type="hidden" class="form-control" id="id" name="id" >
+                <label for="name" class="col-sm-2 control-label">主机name</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="name" name="name" >
+                </div>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary btn-update-asset">编辑</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
 {% block js %}
     var table = jQuery('#table_asset').DataTable({
         "language": {
@@ -101,9 +131,79 @@
     });
 
     jQuery('#table_asset').on('click', '.btn-edit-asset', function() {
-    console.log('编辑' + jQuery(this).attr('data-id'));
-    table.ajax.reload(null, false);
+    var id = jQuery(this).attr('data-id');
+    jQuery('.dialog-update-asset').modal('show');
+    jQuery.get("{% url 'asset:get_ajax' %}",{'uid':id},function(result) {
+            if (result['code'] == 200) {
+                jQuery('.form-update-asset').find('[id=id]').val(result['result']['id']);
+                jQuery('.form-update-asset').find('[id=name]').val(result['result']['name']);
+            } else if (result['code'] == 400) {
+                var errors = [];
+                jQuery.each(result['errors'], function (k, v) {
+                    errors.push(v)
+                });
+                swal("验证有误", errors.join('\n'), "error")
+            } else if (result['code'] == 403) {
+                swal({
+                    title: "用户未登陆",
+                    text: "",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+    },'json')
 });
+
+    jQuery('.btn-update-asset').on('click',function () {
+        var data = jQuery('.form-update-asset').serializeArray();
+        console.log(data)
+        swal({
+              title: "确定更新吗？",
+              text: "",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "确定更新！",
+              cancelButtonText: "取消更新！",
+              closeOnConfirm: false,
+              closeOnCancel: true
+            },
+            function () {
+                jQuery.post("{% url 'asset:update_ajax' %}",data,function (result) {
+                    if (result['code'] == 200) {
+                        swal({
+                        title: '成功',
+                        text: '',
+                        type: 'success',
+                        closeOnConfirm: 'false'
+                    }, function () {
+                        //关闭sweetalert
+                        swal.close();
+                        /*刷新table*/
+                        table.ajax.reload(null, false);
+                        swal.close();
+                        //关闭dialogs
+                        jQuery('#dialog-update-asset').modal('hide');
+                    });
+                    } else if (result['code'] == 400) {
+                        var errors = [];
+                        jQuery.each(result['errors'],function (k,v) {
+                            errors.push(v)
+                        });
+                        swal("验证有误",errors.join('\n'),"error")
+                    } else if (result['code'] == 403) {
+                        swal({
+                      title: "用户未登陆",
+                      text: "",
+                      timer: 2000,
+                      showConfirmButton: false
+                        });
+                    }
+                },'json')
+            }
+        );
+    });
+
 
     jQuery('#table_asset').on('click', '.btn-delete-asset', function() {
         var id = jQuery(this).attr('data-id');
@@ -144,7 +244,7 @@
                       showConfirmButton: false
                         });
                     }
-                })
+                },'json')
             });
     });
 {% endblock %}

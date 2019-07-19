@@ -34,7 +34,9 @@ class ResultCallback(CallbackBase):
     def collect_host(self,result):
         # print(result)
         fact = result.get('ansible_facts',{})
-        ip = fact.get("ansible_default_ipv4").get("network",'')
+        # 2.6.0 ansible版本中 ip获取是address，更高版本可能会变为network
+        # ip = fact.get("ansible_default_ipv4").get("network",'')
+        ip = fact.get("ansible_default_ipv4").get("address",'')
         name = fact.get("ansible_nodename",'')
         mac = fact.get("ansible_default_ipv4").get("macaddress",'')
         os = fact.get("ansible_os_family",'')
