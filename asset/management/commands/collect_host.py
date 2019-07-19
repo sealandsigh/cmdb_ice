@@ -28,8 +28,8 @@ class ResultCallback(CallbackBase):
         func = self.actions.get(result.task_name)
         if func:
             func(result._result)
-        print(result._host)
-        print(result.task_name)
+        # print(result._host)
+        # print(result.task_name)
 
     def collect_host(self,result):
         # print(result)
@@ -48,7 +48,7 @@ class ResultCallback(CallbackBase):
 class Command(BaseCommand):
 
     def handle(self,*args,**options):
-        print('test')
+        print('running task now......')
         Options = namedtuple('Options',
                              ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check',
                               'diff'])
