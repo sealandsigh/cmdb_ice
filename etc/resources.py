@@ -5,7 +5,7 @@
 import os
 
 if __name__ =='__main__':
-    fhandler = os.popen('top -n 1')
+    fhandler = os.popen('top -n 1 -b')
     flines = fhandler.readlines()
     cpuline = flines[2].split()
     memline = flines[3].split()
