@@ -18,7 +18,7 @@ from ansible.playbook.play import Play
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.plugins.callback import CallbackBase
 
-from asset.models import Hosts
+from asset.models import Hosts,Resources
 
 class ResultCallback(CallbackBase):
 
@@ -56,6 +56,7 @@ class ResultCallback(CallbackBase):
     def collect_resources(self,result):
         ip = self._cache_host.get(result._host.name)
         resources = result._result.get('stdout_lines',[])
+        Resources.create_obj(ip,resources[0],resources[1])
         print(ip)
         print(resources)
 

@@ -13,4 +13,5 @@ if __name__ =='__main__':
     memtotal = float(memline[3])
     memuse = float(memline[7])
     mem = round(memuse / memtotal * 100,1)
-    print(cpu,mem)
+    print(cpu)
+    print(mem)
