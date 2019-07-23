@@ -53,3 +53,13 @@ def update_ajax(request):
         return JsonResponse({'code':200})
     else:
         return JsonResponse({'code':400,'errors':errors})
+
+
+def resource_ajax(request):
+    if request.session.get('user') is None:
+        redirect('user:login')
+        return JsonResponse({'code':403,'result':[]})
+    xAxis = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+    CPU_datas = [1, 10, 101, 134, 90, 230, 210]
+    MEM_datas = [3, 5, 191, 234, 290, 330, 310]
+    return JsonResponse({'code':200,'result':{'xAxis':xAxis,'CPU_datas':CPU_datas,'MEM_datas':MEM_datas}})

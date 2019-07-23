@@ -230,17 +230,21 @@
     };
 
     jQuery('#table_asset').on('click', '.btn-resource-asset', function() {
-        var xAxis = ['周一','周二','周三','周四','周五','周六','周日']
-        var CPU_datas = [120, 132, 101, 134, 90, 230, 210]
-        var MEM_datas = [220, 182, 191, 234, 290, 330, 310]
-        // 指定图表的配置项和数据
-        chart_resource_option['xAxis']['data'] = xAxis
-        chart_resource_option['series'][0]['data'] = CPU_datas
-        chart_resource_option['series'][1]['data'] = MEM_datas
+        jQuery.get('{% url 'asset:resource_ajax' %}',{},function(result) {
+            if (result['code'] == 200) {
+            var xAxis = result['result']['xAxis']
+            var CPU_datas = result['result']['CPU_datas']
+            var MEM_datas = result['result']['MEM_datas']
+            // 指定图表的配置项和数据
+            chart_resource_option['xAxis']['data'] = xAxis
+            chart_resource_option['series'][0]['data'] = CPU_datas
+            chart_resource_option['series'][1]['data'] = MEM_datas
 
 
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(chart_resource_option);
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(chart_resource_option);
+            }
+        })
         jQuery('.dialog-resource-asset').modal({show:true});
     })
 
