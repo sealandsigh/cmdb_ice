@@ -64,7 +64,9 @@ def resource_ajax(request):
         redirect('user:login')
         return JsonResponse({'code':403,'result':[]})
     start_time = timezone.now() - timedelta(days=1)
-    resources = Resources.objects.filter(created_time__gte=start_time).order_by('created_time')
+    _id = request.GET.get('id')
+    host = Hosts.objects.get(pk=_id)
+    resources = Resources.objects.filter(ip=host.ip,created_time__gte=start_time).order_by('created_time')
     xAxis = []
     CPU_datas = []
     MEM_datas = []

@@ -230,7 +230,8 @@
     };
 
     jQuery('#table_asset').on('click', '.btn-resource-asset', function() {
-        jQuery.get('{% url 'asset:resource_ajax' %}',{},function(result) {
+        var id = jQuery(this).data("id")
+        jQuery.get('{% url 'asset:resource_ajax' %}',{'id':id},function(result) {
             if (result['code'] == 200) {
             var xAxis = result['result']['xAxis']
             var CPU_datas = result['result']['CPU_datas']
