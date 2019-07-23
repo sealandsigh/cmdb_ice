@@ -1,8 +1,12 @@
+from datetime import datetime
+from datetime import timedelta
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from asset.models import Hosts
 from django.core.exceptions import ObjectDoesNotExist
 from asset.validators import asset_validators
+from django.utils import timezone
+from asset.models import Resources
 
 # Create your views here.
 
@@ -59,7 +63,15 @@ def resource_ajax(request):
     if request.session.get('user') is None:
         redirect('user:login')
         return JsonResponse({'code':403,'result':[]})
-    xAxis = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-    CPU_datas = [1, 10, 101, 134, 90, 230, 210]
-    MEM_datas = [3, 5, 191, 234, 290, 330, 310]
+    start_time = timezone.now() - timedelta(days=1)
+    resources = Resources.objects.filter(created_time__gte=start_time).order_by('created_time')
+    xAxis = []
+    CPU_datas = []
+    MEM_datas = []
+
+    for resource in resources:
+        xAxis.append(resource.created_time)
+        CPU_datas.append(resource.cpu)
+        MEM_datas.append(resource.mem)
+
     return JsonResponse({'code':200,'result':{'xAxis':xAxis,'CPU_datas':CPU_datas,'MEM_datas':MEM_datas}})
