@@ -63,7 +63,7 @@
       </div>
       <div class="modal-body">
           <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-          <div id="chart-resource" style="width: 600px;height:400px;"></div>
+          <div id="chart-resource" style="width: 800px;height:400px;"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -229,9 +229,9 @@
         ]
     };
 
-    jQuery('#table_asset').on('click', '.btn-resource-asset', function() {
-        var id = jQuery(this).data("id")
-        jQuery.get('{% url 'asset:resource_ajax' %}',{'id':id},function(result) {
+    var th = null;
+    function reload_resource_chart(id) {
+        jQuery.get('{% url 'asset:resource_ajax' %}',{'id':id,'_':(new Date()).getTime()},function(result) {
             if (result['code'] == 200) {
             var xAxis = result['result']['xAxis']
             var CPU_datas = result['result']['CPU_datas']
@@ -245,9 +245,27 @@
             // 使用刚指定的配置项和数据显示图表。
             myChart.setOption(chart_resource_option);
             }
-        })
+        },'json')
+    }
+
+    jQuery('#table_asset').on('click', '.btn-resource-asset', function() {
+        var id = jQuery(this).data("id")
+        reload_resource_chart(id)
+        if (th === null) {
+            th = setInterval(function() {
+                reload_resource_chart(id)
+            },30 * 1000)
+        }
         jQuery('.dialog-resource-asset').modal({show:true});
     })
+
+    jQuery('.dialog-resource-asset').on('hidden.bs.modal', function (e) {
+        console.log(th)
+        if (th != null) {
+            clearInterval(th);
+            th = null;
+        }
+    });
 
     jQuery('.btn-update-asset').on('click',function () {
         var data = jQuery('.form-update-asset').serializeArray();
