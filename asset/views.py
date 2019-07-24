@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from datetime import timedelta
 from django.shortcuts import render,redirect
@@ -63,17 +64,30 @@ def resource_ajax(request):
     if request.session.get('user') is None:
         redirect('user:login')
         return JsonResponse({'code':403,'result':[]})
-    start_time = timezone.now() - timedelta(days=1)
+    end_time = timezone.now()
+    start_time = end_time - timedelta(days=1)
     _id = request.GET.get('id')
     host = Hosts.objects.get(pk=_id)
     resources = Resources.objects.filter(ip=host.ip,created_time__gte=start_time).order_by('created_time')
+    tmp_resources = {}
+    for resource in resources:
+        tmp_resources[resource.strftime('%Y-%m-%d %H:%M')] = {'cpu':resource.cpu,'mem':resource.mem}
+
     xAxis = []
     CPU_datas = []
     MEM_datas = []
 
-    for resource in resources:
-        xAxis.append(resource.created_time)
-        CPU_datas.append(resource.cpu)
-        MEM_datas.append(resource.mem)
+    while start_time <= end_time:
+        key = start_time.strftime('%Y-%m-%d %H:%M')
+        resource = tmp_resources.get(key,{})
+        xAxis.append(key)
+        CPU_datas.append(resource.get('cpu',0))
+        MEM_datas.append(resource.get('mem',0))
+        start_time += timedelta(minutes=1)
+
+    # for resource in resources:
+    #     xAxis.append(time.strftime('%Y-%m-%d %H:%M', time.localtime(resource.created_time.timestamp())))
+    #     CPU_datas.append(resource.cpu)
+    #     MEM_datas.append(resource.mem)
 
     return JsonResponse({'code':200,'result':{'xAxis':xAxis,'CPU_datas':CPU_datas,'MEM_datas':MEM_datas}})
