@@ -4,7 +4,7 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from django.conf import settings
-from webanalysis.models import AccessFile
+from webanalysis.models import AccessFile,AccessLog
 
 # Create your views here.
 def index(request):
@@ -33,3 +33,7 @@ def upload(request):
         with open(path,'w') as fhandler:
             fhandler.write(json.dumps({'id':obj.id,'path':obj.path}))
     return HttpResponse('upload')
+
+def dist_status_code(request):
+    legend,series = AccessLog.dist_status_code(request.GET.get('id',0))
+    return JsonResponse({'code':200,'result':{'legend':legend,'series':series}})

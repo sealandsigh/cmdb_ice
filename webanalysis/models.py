@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import connection
 
 # Create your models here.
 
@@ -14,3 +15,21 @@ class AccessLog(models.Model):
     url = models.CharField(max_length=1024,null=False,default='')
     status_code = models.IntegerField(null=False,default=0)
     access_time = models.DateTimeField(null=False)
+
+    @classmethod
+    def dist_status_code(cls,file_id):
+        cursor = connection.cursor()
+        cursor.execute('''
+                                    select status_code, count(*)
+                                    from webanalysis_accesslog
+                                    where file_id=%s
+                                    group by status_code
+                                ''', (file_id,))
+        rt = cursor.fetchall()
+        legend = []
+        series = []
+        for line in rt:
+            legend.append(str(line[0]))
+            series.append({"name": str(line[0]), "value": line[1]})
+
+        return legend, series

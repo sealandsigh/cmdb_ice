@@ -69,7 +69,7 @@ active
     legend: {
         orient : 'vertical',
         x : 'left',
-        data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+        data:[]
     },
     toolbox: {
         show : true,
@@ -99,17 +99,10 @@ active
             type:'pie',
             radius : '55%',
             center: ['50%', '60%'],
-            data:[
-                {value:335, name:'直接访问'},
-                {value:310, name:'邮件营销'},
-                {value:234, name:'联盟广告'},
-                {value:135, name:'视频广告'},
-                {value:1548, name:'搜索引擎'}
-            ]
+            data:[]
         }
     ]
 };
-    chart_dist_status_code.setOption(option_dist_status_code);
 
     var option_trend_visit = {
     tooltip : {
@@ -215,4 +208,20 @@ active
     ]
 };
     chart_trend_visit.setOption(option_trend_visit);
+
+    function reload() {
+        var id = jQuery('#accesslog_file').val();
+        reload_dist_status_code(id);
+        reload_trend_visit(id);
+    }
+
+    function reload_dist_status_code(id) {
+        jQuery.get("{% url 'webanalysis:dist_status_code' %}",{'id':id},function(result) {
+            if (result['code'] == 200) {
+                option_dist_status_code['legend']['data'] = result['result']['legend']
+                option_dist_status_code['series'][0]['data'] = result['result']['series']
+                chart_dist_status_code.setOption(option_dist_status_code);
+            }
+        },'json');
+    }
 {% endblock %}
