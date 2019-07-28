@@ -10,8 +10,20 @@ active
 
 {% block container %}
 <div class="row">
-    <div class="col-md-12">
-        <form method="post" enctype="multipart/form-data" action="{% url 'webanalysis:upload' %}">
+    <div class="col-md-6">
+        <form class="form-inline">
+            <div class="form-group">
+                <label class="form-label">文件选择</label>
+                <select class="form-control" id="accesslog_file">
+                    {% for item in files %}
+                    <option value="{{ item.id }}">{{ item.name }}({{ item.created_time }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <form class="form-inline" method="post" enctype="multipart/form-data" action="{% url 'webanalysis:upload' %}">
             {% csrf_token %}
             <div class="form-group">
                 <label class="form-label sr-only">上传文件</label>
@@ -19,6 +31,19 @@ active
             </div>
             <input type="submit" value="提交">
         </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div id="dist_status_code" style="width: 100%;height: 300px">1</div>
+    </div>
+    <div class="col-md-6">
+        <div id="trend_visit" style="width: 100%;height: 300px">2</div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="dist_geo" style="width: 100%;height: 600px">3</div>
     </div>
 </div>
 {% endblock %}

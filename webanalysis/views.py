@@ -8,7 +8,8 @@ from webanalysis.models import AccessFile
 
 # Create your views here.
 def index(request):
-    return render(request, 'webanalysis/index.html')
+    files = AccessFile.objects.filter(status=0).order_by('-created_time')[:10]
+    return render(request, 'webanalysis/index.html',{'files':files})
 
 def upload(request):
     print(request.GET)
