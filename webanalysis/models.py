@@ -33,3 +33,22 @@ class AccessLog(models.Model):
             series.append({"name": str(line[0]), "value": line[1]})
 
         return legend, series
+
+    @classmethod
+    def trend_visit(cls, file_id):
+        cursor = connection.cursor()
+        cursor.execute('''
+                               select date_format(access_time, '%%Y-%%m-%%d %%H:00:00') as day, count(*) as cnt
+                               from webanalysis_accesslog
+                               where file_id = %s
+                               group by day
+                               order by day;
+                           ''', (file_id,))
+        rt = cursor.fetchall()
+        xAxis = []
+        series = []
+        for line in rt:
+            xAxis.append(line[0])
+            series.append(line[1])
+
+        return xAxis, series

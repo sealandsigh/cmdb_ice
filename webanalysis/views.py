@@ -11,6 +11,7 @@ def index(request):
     files = AccessFile.objects.filter(status=0).order_by('-created_time')[:10]
     return render(request, 'webanalysis/index.html',{'files':files})
 
+
 def upload(request):
     print(request.GET)
     print(request.POST)
@@ -34,6 +35,12 @@ def upload(request):
             fhandler.write(json.dumps({'id':obj.id,'path':obj.path}))
     return HttpResponse('upload')
 
+
 def dist_status_code(request):
     legend,series = AccessLog.dist_status_code(request.GET.get('id',0))
     return JsonResponse({'code':200,'result':{'legend':legend,'series':series}})
+
+
+def trend_visit(request):
+    xAxis, series = AccessLog.trend_visit(request.GET.get('id', 0))
+    return JsonResponse({'code': 200, 'result': {'series': series, 'xAxis': xAxis}})
