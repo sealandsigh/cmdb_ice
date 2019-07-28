@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
 日志分析
@@ -20,4 +21,8 @@ active
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'echarts-2.2.7/build/dist/echarts-all.js' %}"></script>
 {% endblock %}
