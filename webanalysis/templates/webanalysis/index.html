@@ -6,3 +6,18 @@
 {% block nav_webanalysis %}
 active
 {% endblock %}
+
+{% block container %}
+<div class="row">
+    <div class="col-md-12">
+        <form method="post" enctype="multipart/form-data" action="{% url 'webanalysis:upload' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label sr-only">上传文件</label>
+                <input type="file" name="log">
+            </div>
+            <input type="submit" value="提交">
+        </form>
+    </div>
+</div>
+{% endblock %}

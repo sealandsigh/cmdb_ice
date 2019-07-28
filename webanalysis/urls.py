@@ -9,4 +9,5 @@ app_name='webanalysis'
 
 urlpatterns = [
     path('index/',views.index,name='index'),
+    path('upload/',views.upload,name='upload'),
 ]
