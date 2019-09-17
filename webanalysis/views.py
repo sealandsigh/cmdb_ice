@@ -17,6 +17,7 @@ def login_required(func):
                 return JsonResponse({'code':403,'result':[]})
             return redirect('user:login')
         return func(request,*args,**kwargs)
+
     return wrapper
 
 
