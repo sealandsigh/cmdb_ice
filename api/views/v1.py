@@ -12,6 +12,7 @@ class ClientView(View):
         print(request.GET)
         print(request.POST)
         print(request.body)
+        print(arge,kwargs)
         return HttpResponse('get ok')
 
     @csrf_exempt
@@ -22,4 +23,5 @@ class ClientView(View):
         print(request.GET)
         print(request.POST)
         print(request.body)
+        print(args,kwargs)
         return HttpResponse('post ok')
